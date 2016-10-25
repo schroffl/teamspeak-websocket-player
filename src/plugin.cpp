@@ -31,6 +31,7 @@ static struct TS3Functions ts3Functions;
 #define _strcpy(dest, destSize, src) { strncpy(dest, src, destSize-1); (dest)[destSize-1] = '\0'; }
 #endif
 
+#define PLUGIN_NAME "WebSocket Stream Player"
 #define PLUGIN_API_VERSION 20
 
 #define PCM_BUFFER_SIZE 16384
@@ -41,6 +42,10 @@ DWORD WINAPI MainThread(LPVOID lpParam);
 HANDLE hThread = NULL;
 WebSocketServer wss;
 
+void logMessage(char *message) {
+	printf("[%s] %s\n", PLUGIN_NAME, message);
+}
+
 /*********************************** Required functions ************************************/
 /*
  * If any of these required functions is not implemented, TS3 will refuse to load the plugin
@@ -49,9 +54,9 @@ WebSocketServer wss;
 /* Unique name identifying this plugin */
 const char* ts3plugin_name() {
 #ifdef _WIN32
-	return "WebSocket Stream";
+	return PLUGIN_NAME;
 #else
-	return "WebSocket Stream";
+	return PLUGIN_NAME;
 #endif
 }
 
@@ -73,7 +78,7 @@ const char* ts3plugin_author() {
 /* Plugin description */
 const char* ts3plugin_description() {
 	/* If you want to use wchar_t, see ts3plugin_name() on how to use */
-    return "Play the audio from a websocket stream";
+    return "Pipes the audio from a WebSocket into an input device";
 }
 
 /* Set TeamSpeak 3 callback functions */
@@ -82,7 +87,7 @@ void ts3plugin_setFunctionPointers(const struct TS3Functions funcs) {
 }
 
 int ts3plugin_init() {
-	printf("init\n");
+	logMessage("Init");
 
 	hThread = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
 
@@ -91,12 +96,12 @@ int ts3plugin_init() {
 
 void ts3plugin_shutdown() {
 	if (ts3Functions.unregisterCustomDevice("wsstream") != ERROR_ok)
-		printf("Failed to unregister device\n");
+		logMessage("Failed to unregister device");
 
 	wss.stop();
 	WaitForSingleObject(hThread, INFINITE);
 
-	printf("shutdown\n");
+	logMessage("Shutdown");
 }
 
 void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
@@ -118,7 +123,7 @@ void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
 
 DWORD WINAPI MainThread(LPVOID lpParam) {
 	if (ts3Functions.registerCustomDevice("wsstream", "WebSocket Stream", 48000, 1, 48000, 1) != ERROR_ok)
-		printf("Failed to register device\n");
+		logMessage("[%s] Failed to register device");
 
 	wss.run(WEBSOCKET_SERVER_PORT);
 
