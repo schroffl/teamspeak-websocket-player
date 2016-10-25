@@ -38,7 +38,8 @@ static struct TS3Functions ts3Functions;
 
 DWORD WINAPI MainThread(LPVOID lpParam);
 
-WebSocketServer *wss;
+HANDLE hThread = NULL;
+WebSocketServer wss;
 
 /*********************************** Required functions ************************************/
 /*
@@ -83,10 +84,7 @@ void ts3plugin_setFunctionPointers(const struct TS3Functions funcs) {
 int ts3plugin_init() {
 	printf("init\n");
 
-	WebSocketServer inst;
-	wss = &inst;
-
-	CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
+	hThread = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
 
 	return 0;
 }
@@ -95,7 +93,8 @@ void ts3plugin_shutdown() {
 	if (ts3Functions.unregisterCustomDevice("wsstream") != ERROR_ok)
 		printf("Failed to unregister device\n");
 
-	wss->stop();
+	wss.stop();
+	WaitForSingleObject(hThread, INFINITE);
 
 	printf("shutdown\n");
 }
@@ -118,10 +117,10 @@ void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
 }
 
 DWORD WINAPI MainThread(LPVOID lpParam) {
-	if (ts3Functions.registerCustomDevice("wsstream", "WebSocket Stream Device", 48000, 1, 48000, 1) != ERROR_ok)
+	if (ts3Functions.registerCustomDevice("wsstream", "WebSocket Stream", 48000, 1, 48000, 1) != ERROR_ok)
 		printf("Failed to register device\n");
 
-	wss->run(WEBSOCKET_SERVER_PORT);
+	wss.run(WEBSOCKET_SERVER_PORT);
 
 	return 0;
 }
