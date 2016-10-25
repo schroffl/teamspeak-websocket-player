@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "teamspeak/public_errors.h"
 #include "teamspeak/public_errors_rare.h"
 #include "teamspeak/public_definitions.h"
@@ -41,10 +42,6 @@ DWORD WINAPI MainThread(LPVOID lpParam);
 
 HANDLE hThread = NULL;
 WebSocketServer wss;
-
-void logMessage(char *message) {
-	printf("[%s] %s\n", PLUGIN_NAME, message);
-}
 
 /*********************************** Required functions ************************************/
 /*
@@ -87,7 +84,12 @@ void ts3plugin_setFunctionPointers(const struct TS3Functions funcs) {
 }
 
 int ts3plugin_init() {
-	logMessage("Init");
+	printf("[%s] Init\n", PLUGIN_NAME);
+
+	const unsigned int err = ts3Functions.registerCustomDevice("wsstream", "WebSocket Stream", 48000, 1, 48000, 1);
+
+	if (err != ERROR_ok)
+		printf("[%s] Failed to register device [ERROR: %i]\n", PLUGIN_NAME, err);
 
 	hThread = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
 
@@ -95,13 +97,15 @@ int ts3plugin_init() {
 }
 
 void ts3plugin_shutdown() {
-	if (ts3Functions.unregisterCustomDevice("wsstream") != ERROR_ok)
-		logMessage("Failed to unregister device");
+	const unsigned int err = ts3Functions.unregisterCustomDevice("wssstream");
+
+	if (err != ERROR_ok)
+		printf("[%s] Failed to unregister device [ERROR: %i]\n", PLUGIN_NAME, err);
 
 	wss.stop();
 	WaitForSingleObject(hThread, INFINITE);
 
-	logMessage("Shutdown");
+	printf("[%s] Shutdown\n", PLUGIN_NAME);
 }
 
 void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
@@ -122,9 +126,6 @@ void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
 }
 
 DWORD WINAPI MainThread(LPVOID lpParam) {
-	if (ts3Functions.registerCustomDevice("wsstream", "WebSocket Stream", 48000, 1, 48000, 1) != ERROR_ok)
-		logMessage("[%s] Failed to register device");
-
 	wss.run(WEBSOCKET_SERVER_PORT);
 
 	return 0;
