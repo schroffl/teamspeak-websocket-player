@@ -16,5 +16,5 @@ class WebSocketServer {
 		void stop();
 
 	private:
-		server *m_endpoint;
+		server _server;
 };
