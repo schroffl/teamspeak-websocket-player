@@ -69,7 +69,9 @@
     <OutDir>\projects\teamspeak\plugins\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);./include;</IncludePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
@@ -144,10 +146,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="plugin.cpp" />
-    <ClCompile Include="wsserver.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\include\plugin_definitions.h" />
     <ClInclude Include="..\include\teamlog\logtypes.h" />
     <ClInclude Include="..\include\teamspeak\clientlib_publicdefinitions.h" />
@@ -156,8 +154,12 @@
     <ClInclude Include="..\include\teamspeak\public_errors_rare.h" />
     <ClInclude Include="..\include\teamspeak\public_rare_definitions.h" />
     <ClInclude Include="..\include\ts3_functions.h" />
-    <ClInclude Include="plugin.h" />
-    <ClInclude Include="wsserver.h" />
+    <ClInclude Include="src\plugin.h" />
+    <ClInclude Include="src\wsserver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\plugin.cpp" />
+    <ClCompile Include="src\wsserver.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
