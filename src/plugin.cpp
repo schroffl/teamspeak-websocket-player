@@ -24,6 +24,7 @@
 
 static struct TS3Functions ts3Functions;
 
+#include "globals.h"
 #include "config.h"
 #include "wsserver.h"
 
@@ -103,8 +104,7 @@ int ts3plugin_init() {
 	#ifdef _WIN32
 	hThread = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
 	#else
-	std::thread wssThread(MainThread);
-	hThread = &wssThread;
+	Globals::mainThread = std::thread(MainThread);
 	#endif
 
 	return 0;
@@ -121,7 +121,7 @@ void ts3plugin_shutdown() {
 	#ifdef _WIN32
 	WaitForSingleObject(hThread, INFINITE);
 	#else
-	hThread->join();
+	Globals::mainThread.join();
 	#endif
 
 	printf("[%s] Shutdown\n", PLUGIN_NAME);
