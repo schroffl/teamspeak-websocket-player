@@ -55,7 +55,7 @@ const char* ts3plugin_name() {
 
 /* Plugin version */
 const char* ts3plugin_version() {
-    return "0.1.0";
+    return "0.2.0";
 }
 
 /* Plugin API version. Must be the same as the clients API major version, else the plugin fails to load. */
