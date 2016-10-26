@@ -6,7 +6,6 @@
 
 #ifdef _WIN32
 	#pragma warning (disable : 4100)  /* Disable Unreferenced parameter warning */
-	#include <Windows.h>
 #endif
 
 #include <stdio.h>
@@ -21,27 +20,24 @@
 #include "ts3_functions.h"
 #include "plugin.h"
 
-#include "wsserver.h"
-
 static struct TS3Functions ts3Functions;
 
-#ifdef _WIN32
-#define _strcpy(dest, destSize, src) strcpy_s(dest, destSize, src)
-#define snprintf sprintf_s
-#else
-#define _strcpy(dest, destSize, src) { strncpy(dest, src, destSize-1); (dest)[destSize-1] = '\0'; }
-#endif
+#include "config.h"
+#include "wsserver.h"
 
 #define PLUGIN_NAME "WebSocket Stream Player"
 #define PLUGIN_API_VERSION 20
 
-#define PCM_BUFFER_SIZE 16384
-#define WEBSOCKET_SERVER_PORT 8080
+#define DEFAULT_PCM_BUFFER_SIZE 16384
+#define DEFAULT_WEBSOCKET_SERVER_PORT 8080
 
 DWORD WINAPI MainThread(LPVOID lpParam);
-
 HANDLE hThread = NULL;
+
+Config cfg;
+
 WebSocketServer wss;
+int websocketServerPort;
 
 /*********************************** Required functions ************************************/
 /*
@@ -86,6 +82,16 @@ void ts3plugin_setFunctionPointers(const struct TS3Functions funcs) {
 int ts3plugin_init() {
 	printf("[%s] Init\n", PLUGIN_NAME);
 
+	char pluginPath[512];
+	char configPath[512];
+
+	// Acquire the path of the configuration file
+	ts3Functions.getPluginPath(pluginPath, 512);
+	sprintf(configPath, "%sws-replay/config.ini", pluginPath);
+
+	cfg.loadFile(configPath);
+	websocketServerPort = cfg.get("port", DEFAULT_WEBSOCKET_SERVER_PORT);
+
 	const unsigned int err = ts3Functions.registerCustomDevice("wsstream", "WebSocket Stream", 48000, 1, 48000, 1);
 
 	if (err != ERROR_ok)
@@ -111,22 +117,22 @@ void ts3plugin_shutdown() {
 void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
 	std::string msgString = msg->get_payload();
 
-	char charBuf[PCM_BUFFER_SIZE * 2];
-	short pcmBuf[PCM_BUFFER_SIZE];
+	char charBuf[DEFAULT_PCM_BUFFER_SIZE * 2];
+	short pcmBuf[DEFAULT_PCM_BUFFER_SIZE];
 
 	memcpy(charBuf, msgString.c_str(), msgString.size());
 
-	for (int i = 0; i < PCM_BUFFER_SIZE * 2; i += 2) {
+	for (int i = 0; i < DEFAULT_PCM_BUFFER_SIZE * 2; i += 2) {
 		int sample = i / 2;
 
 		pcmBuf[sample] = ((charBuf[i + 1] & 0xFF) << 8) | (charBuf[i] & 0xFF);
 	}
 
-	ts3Functions.processCustomCaptureData("wsstream", pcmBuf, PCM_BUFFER_SIZE);
+	ts3Functions.processCustomCaptureData("wsstream", pcmBuf, DEFAULT_PCM_BUFFER_SIZE);
 }
 
 DWORD WINAPI MainThread(LPVOID lpParam) {
-	wss.run(WEBSOCKET_SERVER_PORT);
+	wss.run(websocketServerPort);
 
 	return 0;
 }
