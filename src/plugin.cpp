@@ -46,11 +46,7 @@ int websocketServerPort;
 
 /* Unique name identifying this plugin */
 const char* ts3plugin_name() {
-#ifdef _WIN32
 	return PLUGIN_NAME;
-#else
-	return PLUGIN_NAME;
-#endif
 }
 
 /* Plugin version */
