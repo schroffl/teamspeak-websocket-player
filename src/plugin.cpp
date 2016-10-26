@@ -5,7 +5,9 @@
  */
 
 #ifdef _WIN32
-	#pragma warning (disable : 4100)  /* Disable Unreferenced parameter warning */
+#pragma warning (disable : 4100)  /* Disable Unreferenced parameter warning */
+#else
+#include <thread>
 #endif
 
 #include <stdio.h>
@@ -31,8 +33,13 @@ static struct TS3Functions ts3Functions;
 #define DEFAULT_PCM_BUFFER_SIZE 16384
 #define DEFAULT_WEBSOCKET_SERVER_PORT 8080
 
+#ifdef _WIN32
 DWORD WINAPI MainThread(LPVOID lpParam);
 HANDLE hThread = NULL;
+#else
+void MainThread();
+std::thread *hThread;
+#endif
 
 Config cfg;
 
@@ -93,7 +100,12 @@ int ts3plugin_init() {
 	if (err != ERROR_ok)
 		printf("[%s] Failed to register device [ERROR: %i]\n", PLUGIN_NAME, err);
 
+	#ifdef _WIN32
 	hThread = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
+	#else
+	std::thread wssThread(MainThread);
+	hThread = &wssThread;
+	#endif
 
 	return 0;
 }
@@ -105,7 +117,12 @@ void ts3plugin_shutdown() {
 		printf("[%s] Failed to unregister device [ERROR: %i]\n", PLUGIN_NAME, err);
 
 	wss.stop();
+
+	#ifdef _WIN32
 	WaitForSingleObject(hThread, INFINITE);
+	#else
+	hThread->join();
+	#endif
 
 	printf("[%s] Shutdown\n", PLUGIN_NAME);
 }
@@ -127,8 +144,13 @@ void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
 	ts3Functions.processCustomCaptureData("wsstream", pcmBuf, DEFAULT_PCM_BUFFER_SIZE);
 }
 
+#ifdef _WIN32
 DWORD WINAPI MainThread(LPVOID lpParam) {
 	wss.run(websocketServerPort);
-
 	return 0;
 }
+#else
+void MainThread() {
+	wss.run(websocketServerPort);
+}
+#endif
