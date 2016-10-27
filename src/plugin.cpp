@@ -125,7 +125,7 @@ void ts3plugin_shutdown() {
 	printf("[%s] Shutdown\n", PLUGIN_NAME);
 }
 
-void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg) {
+void on_message(websocketpp::connection_hdl hdl, message_ptr msg) {
 	std::string msgString = msg->get_payload();
 
 	char charBuf[DEFAULT_PCM_BUFFER_SIZE * 2];
