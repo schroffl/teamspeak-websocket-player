@@ -4,7 +4,7 @@
 #include <Windows.h>
 typedef HANDLE GlobalThread;
 #else
-typdef std::thread GlobalThread;
+typedef std::thread GlobalThread;
 #endif
 
 class Globals {
