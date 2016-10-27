@@ -4,7 +4,7 @@ void on_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg);
 
 WebSocketServer::WebSocketServer() {
 	_server.set_error_channels(websocketpp::log::elevel::all);
-	_server.set_access_channels(websocketpp::log::alevel::all ^ websocketpp::log::alevel::frame_payload);
+	_server.set_access_channels(websocketpp::log::alevel::all);
 
 	_server.init_asio();
 }
