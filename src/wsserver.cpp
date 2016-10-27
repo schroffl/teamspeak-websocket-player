@@ -10,7 +10,13 @@ WebSocketServer::WebSocketServer() {
 }
 
 void WebSocketServer::run(int port) {
+	printf("I'm gonna crash!\n");
+
+	// Crash
 	_server.set_message_handler(websocketpp::lib::bind(&on_message, websocketpp::lib::placeholders::_1, websocketpp::lib::placeholders::_2));
+
+	printf("I crashed :(\n");
+	Sleep(1000);
 
 	_server.listen(port);
 	_server.start_accept();

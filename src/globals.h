@@ -1,4 +1,5 @@
 #include <thread>
+#include "wsserver.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -10,4 +11,5 @@ typedef std::thread GlobalThread;
 class Globals {
 	public:
 		static GlobalThread mainThread;
+		static WebSocketServer *wss;
 };
