@@ -1,6 +1,13 @@
 #include <thread>
 
+#ifdef _WIN32
+#include <Windows.h>
+typedef HANDLE GlobalThread;
+#else
+typdef std::thread GlobalThread;
+#endif
+
 class Globals {
 	public:
-		static std::thread mainThread;
+		static GlobalThread mainThread;
 };

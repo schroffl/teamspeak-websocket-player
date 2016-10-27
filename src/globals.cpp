@@ -1,3 +1,3 @@
 #include "globals.h"
 
-std::thread Globals::mainThread;
+GlobalThread Globals::mainThread;
