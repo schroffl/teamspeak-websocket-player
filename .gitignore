@@ -251,5 +251,9 @@ paket-files/
 .idea/
 *.sln.iml
 
+# MacOS
+.DS_STORE
+
 # Shared Object File
-ws-replay.so
+ws-player.so
+ws-player.dylib
