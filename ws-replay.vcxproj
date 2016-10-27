@@ -157,11 +157,13 @@
     <ClInclude Include="..\include\teamspeak\public_rare_definitions.h" />
     <ClInclude Include="..\include\ts3_functions.h" />
     <ClInclude Include="src\config.h" />
+    <ClInclude Include="src\globals.h" />
     <ClInclude Include="src\plugin.h" />
     <ClInclude Include="src\wsserver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\config.cpp" />
+    <ClCompile Include="src\globals.cpp" />
     <ClCompile Include="src\plugin.cpp" />
     <ClCompile Include="src\wsserver.cpp" />
   </ItemGroup>
