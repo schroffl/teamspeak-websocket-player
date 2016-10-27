@@ -42,7 +42,7 @@ void MainThread();
 
 Config cfg;
 
-WebSocketServer wss;
+WebSocketServer *wss;
 int websocketServerPort;
 
 /*********************************** Required functions ************************************/
@@ -91,6 +91,9 @@ int ts3plugin_init() {
 	ts3Functions.getPluginPath(pluginPath, 512);
 	sprintf(configPath, "%sws-replay/config.ini", pluginPath);
 
+	WebSocketServer inst;
+	wss = &inst;
+
 	cfg.loadFile(configPath);
 	websocketServerPort = cfg.get("port", DEFAULT_WEBSOCKET_SERVER_PORT);
 
@@ -114,7 +117,7 @@ void ts3plugin_shutdown() {
 	if (err != ERROR_ok)
 		printf("[%s] Failed to unregister device [ERROR: %i]\n", PLUGIN_NAME, err);
 
-	wss.stop();
+	wss->stop();
 
 	#ifdef _WIN32
 	WaitForSingleObject(Globals::mainThread, INFINITE);
@@ -144,7 +147,7 @@ void on_message(websocketpp::connection_hdl hdl, message_ptr msg) {
 
 #ifdef _WIN32
 DWORD WINAPI MainThread(LPVOID lpParam) {
-	wss.run(websocketServerPort);
+	wss->run(websocketServerPort);
 	return 0;
 }
 #else
