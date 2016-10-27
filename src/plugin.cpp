@@ -36,10 +36,8 @@ static struct TS3Functions ts3Functions;
 
 #ifdef _WIN32
 DWORD WINAPI MainThread(LPVOID lpParam);
-HANDLE hThread = NULL;
 #else
 void MainThread();
-std::thread *hThread;
 #endif
 
 Config cfg;
@@ -102,7 +100,7 @@ int ts3plugin_init() {
 		printf("[%s] Failed to register device [ERROR: %i]\n", PLUGIN_NAME, err);
 
 	#ifdef _WIN32
-	hThread = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
+	Globals::mainThread = CreateThread(NULL, 0, MainThread, NULL, 0, NULL);
 	#else
 	Globals::mainThread = std::thread(MainThread);
 	#endif
@@ -119,7 +117,7 @@ void ts3plugin_shutdown() {
 	wss.stop();
 
 	#ifdef _WIN32
-	WaitForSingleObject(hThread, INFINITE);
+	WaitForSingleObject(Globals::mainThread, INFINITE);
 	#else
 	Globals::mainThread.join();
 	#endif
