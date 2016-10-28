@@ -1,4 +1,4 @@
 #include "globals.h"
 
 GlobalThread Globals::mainThread;
-WebSocketServer *Globals::wss;
+std::unique_ptr<WebSocketServer> Globals::wss;

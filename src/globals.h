@@ -11,5 +11,5 @@ typedef std::thread GlobalThread;
 class Globals {
 	public:
 		static GlobalThread mainThread;
-		static WebSocketServer *wss;
+		static std::unique_ptr<WebSocketServer> wss;
 };

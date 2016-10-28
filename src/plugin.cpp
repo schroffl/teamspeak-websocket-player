@@ -90,8 +90,7 @@ int ts3plugin_init() {
 	ts3Functions.getPluginPath(pluginPath, 512);
 	sprintf(configPath, "%sws-replay/config.ini", pluginPath);
 
-	WebSocketServer inst;
-	Globals::wss = &inst;
+	Globals::wss = std::make_unique<WebSocketServer>();
 
 	cfg.loadFile(configPath);
 	websocketServerPort = cfg.get("port", DEFAULT_WEBSOCKET_SERVER_PORT);
@@ -151,6 +150,6 @@ DWORD WINAPI MainThread(LPVOID lpParam) {
 }
 #else
 void MainThread() {
-	wss.run(websocketServerPort);
+	Globals::wss->run(websocketServerPort);
 }
 #endif
