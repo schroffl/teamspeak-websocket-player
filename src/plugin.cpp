@@ -110,7 +110,7 @@ int ts3plugin_init() {
 }
 
 void ts3plugin_shutdown() {
-	const unsigned int err = ts3Functions.unregisterCustomDevice("wssstream");
+	const unsigned int err = ts3Functions.unregisterCustomDevice("wsstream");
 
 	if (err != ERROR_ok)
 		printf("[%s] Failed to unregister device [ERROR: %i]\n", PLUGIN_NAME, err);
