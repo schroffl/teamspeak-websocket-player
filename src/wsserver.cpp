@@ -6,6 +6,7 @@ using websocketpp::lib::placeholders::_2;
 void on_message(websocketpp::connection_hdl hdl, message_ptr msg);
 
 WebSocketServer::WebSocketServer() {
+	_server.set_reuse_addr(true);
 	_server.set_error_channels(websocketpp::log::elevel::all);
 	_server.set_access_channels(websocketpp::log::alevel::all ^ websocketpp::log::alevel::frame_payload);
 
