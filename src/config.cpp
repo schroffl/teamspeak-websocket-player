@@ -26,7 +26,7 @@ void Config::loadFile(const char *filePath) {
 void Config::saveFile() {
 	std::ofstream fileStream(this->filePath);
 
-	for (auto const &entry : options)
+	for (std::pair<std::string, int> const &entry : options)
 		fileStream << entry.first << "=" << entry.second << std::endl;
 
 	fileStream.close();
