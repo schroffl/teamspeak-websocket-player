@@ -1,13 +1,14 @@
 CC=g++
 CFLAGS=-std=c++11 -I./include -fPIC -pthread -shared
 LDFLAGS=-lpthread
+OS:=$(shell uname)
 
 ifeq ($(OS), Darwin)
 CFLAGS+=-dynamiclib
-FILE_XTENSION=so
+FILE_XTENSION=dylib
 else
 CFLAGS+=-shared
-FILE_EXTENSION=dylib
+FILE_EXTENSION=so
 endif
 
 ws-player: src/*.cpp
