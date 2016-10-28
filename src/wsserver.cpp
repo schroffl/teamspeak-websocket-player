@@ -16,9 +16,16 @@ void WebSocketServer::on_open(WebSocketServer *wss, websocketpp::connection_hdl 
 	wss->clients.push_back(client);
 }
 
+void WebSocketServer::on_close(WebSocketServer *wss, websocketpp::connection_hdl client) {
+	wss->clients.remove_if([&] (websocketpp::connection_hdl cl){
+		return cl.lock() == client.lock();
+	});
+}
+
 void WebSocketServer::run(int port) {
 	_server.set_message_handler(websocketpp::lib::bind(&on_message, ::_1, ::_2));
 	_server.set_open_handler(websocketpp::lib::bind(&on_open, this, ::_1));
+	_server.set_close_handler(websocketpp::lib::bind(&on_close, this, ::_1));
 
 	_server.listen(port);
 	_server.start_accept();

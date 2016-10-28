@@ -9,6 +9,7 @@
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 typedef server::message_ptr message_ptr;
+typedef std::list<websocketpp::connection_hdl> clientList;
 
 class WebSocketServer {
 	public:
@@ -17,8 +18,9 @@ class WebSocketServer {
 		void stop();
 
 		static void on_open(WebSocketServer *wss, websocketpp::connection_hdl client);
+		static void on_close(WebSocketServer *wss, websocketpp::connection_hdl client);
 
 	private:
 		server _server;
-		std::list<websocketpp::connection_hdl> clients;
+		clientList clients;
 };
