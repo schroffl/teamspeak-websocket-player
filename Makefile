@@ -5,7 +5,7 @@ OS:=$(shell uname)
 
 ifeq ($(OS), Darwin)
 CFLAGS+=-dynamiclib
-FILE_XTENSION=dylib
+FILE_EXTENSION=dylib
 else
 CFLAGS+=-shared
 FILE_EXTENSION=so
