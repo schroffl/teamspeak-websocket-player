@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++14 -I./include -fPIC -pthread -shared
+CFLAGS=-std=c++14 -I./include -fPIC -pthread
 LDFLAGS=-lpthread
 OS:=$(shell uname)
 
