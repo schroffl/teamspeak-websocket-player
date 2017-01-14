@@ -29,7 +29,7 @@ static struct TS3Functions ts3Functions;
 #include "wsserver.h"
 
 #define PLUGIN_NAME "WebSocket Stream Player"
-#define PLUGIN_API_VERSION 20
+#define PLUGIN_API_VERSION 21
 
 #define DEFAULT_PCM_BUFFER_SIZE 16384
 #define DEFAULT_WEBSOCKET_SERVER_PORT 8080
@@ -56,7 +56,7 @@ const char* ts3plugin_name() {
 
 /* Plugin version */
 const char* ts3plugin_version() {
-    return "0.2.2";
+    return "0.2.3";
 }
 
 /* Plugin API version. Must be the same as the clients API major version, else the plugin fails to load. */
